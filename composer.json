@@ -1,0 +1,19 @@
+{
+    "name": "mventures/newrelic",
+    "description": "Newrelic helper functions",
+    "homepage": "http://github.com/mventures/newrelic",
+    "license": "MIT",
+    "keywords": ["newrelic"],
+    "minimum-stability": "stable",
+    "autoload": {
+        "files": [ "NewRelic.php" ]
+    },
+    "require": {
+        "php": ">=5.6"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "0.x-dev"
+        }
+    }
+}
