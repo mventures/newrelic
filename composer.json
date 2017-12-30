@@ -10,10 +10,5 @@
     },
     "require": {
         "php": ">=5.6"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-develop": "0.x-dev"
-        }
     }
 }
