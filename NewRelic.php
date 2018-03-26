@@ -6,6 +6,12 @@
 class NewRelic
 {
     /**
+     * Current index of parameter stacks by their key
+     * @var [string => int]
+     */
+    protected static $stackedParameterCount = [];
+
+    /**
      * Will send a notice error to New Relic described by $message, with optional custom parameters.
      *
      * @param $message
@@ -79,6 +85,30 @@ class NewRelic
         }
 
         newrelic_add_custom_parameter($key, $value);
+    }
+
+    /**
+     * Let add multiple values under a common key structure
+     * An index incremented for the provided $key determines the key used to attach the value
+     * $key is also used as is, to identify the transaction in a predictable way
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public static function addStackedParameterToCurrentTransaction($key, $value)
+    {
+        if (isset(self::$stackedParameterCount[$key])) {
+            self::$stackedParameterCount[$key]++;
+        } else {
+            self::addParameterToCurrentTransaction($key);
+            self::$stackedParameterCount[$key] = 1;
+        }
+
+        self::addParameterToCurrentTransaction(sprintf(
+            '%s.%s',
+            $key,
+            self::$stackedParameterCount[$key]
+        ), $value);
     }
 
     /**
