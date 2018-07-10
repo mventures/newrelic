@@ -88,6 +88,19 @@ class NewRelic
     }
 
     /**
+     * Add an array of custom parameters to the current New Relic transaction
+     *
+     * @param array $parameters
+     * @param string $parameterKeyPrefix
+     */
+    public static function addParametersToCurrentTransaction($parameters, $parameterKeyPrefix = '')
+    {
+        foreach ($parameters as $parameterKey => $parameterValue) {
+            static::addParameterToCurrentTransaction($parameterKeyPrefix . $parameterKey, $parameterValue);
+        }
+    }
+
+    /**
      * Record a custom event to NewRelic
      * **** CustomEvent on NewRelic exists on the same level as `Transaction`,
      * **** so this let's send data to NewRelic independently of the current transaction.
@@ -109,19 +122,6 @@ class NewRelic
         }
 
         newrelic_record_custom_event($name, $attributes);
-    }
-
-    /**
-     * Add an array of custom parameters to the current New Relic transaction
-     *
-     * @param array $parameters
-     * @param string $parameterKeyPrefix
-     */
-    public static function addParametersToCurrentTransaction($parameters, $parameterKeyPrefix = '')
-    {
-        foreach ($parameters as $parameterKey => $parameterValue) {
-            static::addParameterToCurrentTransaction($parameterKeyPrefix . $parameterKey, $parameterValue);
-        }
     }
 
     /**
