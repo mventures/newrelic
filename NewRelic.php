@@ -88,30 +88,6 @@ class NewRelic
     }
 
     /**
-     * Let add multiple values under a common key structure
-     * An index incremented for the provided $key determines the key used to attach the value
-     * $key is also used as is, to identify the transaction in a predictable way
-     *
-     * @param string $key
-     * @param mixed $value
-     */
-    public static function addStackedParameterToCurrentTransaction($key, $value)
-    {
-        if (isset(self::$stackedParameterCount[$key])) {
-            self::$stackedParameterCount[$key]++;
-        } else {
-            self::addParameterToCurrentTransaction($key);
-            self::$stackedParameterCount[$key] = 1;
-        }
-
-        self::addParameterToCurrentTransaction(sprintf(
-            '%s.%s',
-            $key,
-            self::$stackedParameterCount[$key]
-        ), $value);
-    }
-
-    /**
      * Add an array of custom parameters to the current New Relic transaction
      *
      * @param array $parameters
@@ -122,6 +98,30 @@ class NewRelic
         foreach ($parameters as $parameterKey => $parameterValue) {
             static::addParameterToCurrentTransaction($parameterKeyPrefix . $parameterKey, $parameterValue);
         }
+    }
+
+    /**
+     * Record a custom event to NewRelic
+     * **** CustomEvent on NewRelic exists on the same level as `Transaction`,
+     * **** so this let's send data to NewRelic independently of the current transaction.
+     *
+     * @param string $name
+     * @param array $attributes
+     */
+    public static function recordCustomEvent($name, array $attributes)
+    {
+        if (! static::isEnabled()) {
+            return;
+        }
+
+        foreach ($attributes as &$attribute) {
+            // `newrelic_record_custom_event` only accepts types float|integer|string, so anything else is encoded.
+            if (!is_string($attribute) && !is_numeric($attribute)) {
+                $attribute = json_encode($attribute);
+            }
+        }
+
+        newrelic_record_custom_event($name, $attributes);
     }
 
     /**
