@@ -112,30 +112,6 @@ class NewRelic
     }
 
     /**
-     * Let add multiple values under a common key structure
-     * An index incremented for the provided $key determines the key used to attach the value
-     * $key is also used as is, to identify the transaction in a predictable way
-     *
-     * @param string $key
-     * @param mixed $value
-     */
-    public static function addStackedParameterToCurrentTransaction($key, $value)
-    {
-        if (isset(self::$stackedParameterCount[$key])) {
-            self::$stackedParameterCount[$key]++;
-        } else {
-            self::addParameterToCurrentTransaction($key);
-            self::$stackedParameterCount[$key] = 1;
-        }
-
-        self::addParameterToCurrentTransaction(sprintf(
-            '%s.%s',
-            $key,
-            self::$stackedParameterCount[$key]
-        ), $value);
-    }
-
-    /**
      * Add an array of custom parameters to the current New Relic transaction
      *
      * @param array $parameters
