@@ -108,7 +108,7 @@ class NewRelic
      * @param string $name
      * @param array $attributes
      */
-    public static function recordCustomEvent($name, $attributes)
+    public static function recordCustomEvent($name, array $attributes)
     {
         if (! static::isEnabled()) {
             return;
