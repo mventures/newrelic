@@ -152,7 +152,7 @@ class NewRelic
     public static function setAppName($appName)
     {
         if (self::isEnabled()) {
-            newrelic_set_appname(sprintf("%s;PHP Application", $appName));
+            newrelic_set_appname((string) $appName);
         }
     }
 
