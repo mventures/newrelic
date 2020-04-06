@@ -125,6 +125,45 @@ class NewRelic
     }
 
     /**
+     * @param string $appName
+     */
+    public static function startTransaction($appName)
+    {
+        if (! static::isEnabled()) {
+            return;
+        }
+
+        newrelic_start_transaction($appName);
+    }
+
+    /**
+     * @param bool $ignore When set to true, it will make newrelic never report and forget the current transaction.
+     */
+    public static function endTransaction($ignore = false)
+    {
+        if (! static::isEnabled()) {
+            return;
+        }
+
+        newrelic_end_transaction($ignore);
+    }
+
+    /**
+     * https://docs.newrelic.com/docs/agents/php-agent/php-agent-api/newreliccustommetric-php-agent-api
+     *
+     * @param string $metric
+     * @param float $responseTime https://docs.newrelic.com/docs/agents/php-agent/php-agent-api/newreliccustommetric-php-agent-api
+     */
+    public static function addCustomMetric($metric, $responseTime)
+    {
+        if (! static::isEnabled()) {
+            return;
+        }
+
+        newrelic_custom_metric($metric, $responseTime);
+    }
+
+    /**
      * Set newrelic transaction as background job
      */
     public static function setAsBackgroundJob()
