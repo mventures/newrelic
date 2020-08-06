@@ -1,47 +1,37 @@
 <?php
 
 /**
- * Utility to interact with New Relic
+ * Utility to interact with the newrelic extension.
  */
 class NewRelic
 {
     /**
-     * Current index of parameter stacks by their key
-     * @var [string => int]
-     */
-    protected static $stackedParameterCount = [];
-
-    /**
-     * Will send a notice error to New Relic described by $message, with optional custom parameters.
+     * Posts a notice to New Relic, with optional custom parameters.
      *
      * @param $message
      * @param array $params
      */
-    public static function sendNotice($message, array $params = array())
+    public static function sendNotice($message, array $params = [])
     {
-        // newrelic extension required
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
-        // set params if provided
         foreach ($params as $key => $value) {
             newrelic_add_custom_parameter($key, $value);
         }
 
-        // trigger
         newrelic_notice_error($message);
     }
 
     /**
-     * Records an exception in New Relic. Useful for when New Relic would not normally
-     * receive the exception
+     * Posts a handled throwable to New Relic.
      *
-     * @param \Exception $e
+     * @param Throwable $e
      */
-    public static function sendException(\Exception $e)
+    public static function sendException(Throwable $e)
     {
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
@@ -49,14 +39,14 @@ class NewRelic
     }
 
     /**
-     * Sets the name of the transaction.
+     * Names the current New Relic transaction.
      *
      * @param string $name
-     * @param bool   $captureParams
+     * @param bool $captureParams
      */
     public static function nameTransaction($name, $captureParams = false)
     {
-        if (! static::isEnabled() || empty($name)) {
+        if (!static::isEnabled() || empty($name)) {
             return;
         }
 
@@ -75,7 +65,7 @@ class NewRelic
      */
     public static function addParameterToCurrentTransaction($key, $value = 1)
     {
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
@@ -101,16 +91,14 @@ class NewRelic
     }
 
     /**
-     * Record a custom event to NewRelic
-     * **** CustomEvent on NewRelic exists on the same level as `Transaction`,
-     * **** so this let's send data to NewRelic independently of the current transaction.
+     * Posts a custom event to NewRelic.
      *
      * @param string $name
      * @param array $attributes
      */
     public static function recordCustomEvent($name, array $attributes)
     {
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
@@ -125,11 +113,13 @@ class NewRelic
     }
 
     /**
+     * Starts a New Relic transaction.
+     *
      * @param string $appName
      */
     public static function startTransaction($appName)
     {
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
@@ -137,11 +127,13 @@ class NewRelic
     }
 
     /**
+     * Ends a New Relic transaction
+     *
      * @param bool $ignore When set to true, it will make newrelic never report and forget the current transaction.
      */
     public static function endTransaction($ignore = false)
     {
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
@@ -149,14 +141,13 @@ class NewRelic
     }
 
     /**
-     * https://docs.newrelic.com/docs/agents/php-agent/php-agent-api/newreliccustommetric-php-agent-api
-     *
+     * @link https://docs.newrelic.com/docs/agents/php-agent/php-agent-api/newreliccustommetric-php-agent-api
      * @param string $metric
-     * @param float $responseTime https://docs.newrelic.com/docs/agents/php-agent/php-agent-api/newreliccustommetric-php-agent-api
+     * @param float $responseTime
      */
     public static function addCustomMetric($metric, $responseTime)
     {
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
@@ -164,11 +155,11 @@ class NewRelic
     }
 
     /**
-     * Set newrelic transaction as background job
+     * Sets New Relic transaction as background job
      */
     public static function setAsBackgroundJob()
     {
-        if (! static::isEnabled()) {
+        if (!static::isEnabled()) {
             return;
         }
 
@@ -184,21 +175,18 @@ class NewRelic
     }
 
     /**
-     * Set the app name under which this transaction will be tracked
+     * Sets the app name under which this transaction will be tracked.
      *
      * @param string $appName
      */
     public static function setAppName($appName)
     {
         if (self::isEnabled()) {
-            newrelic_set_appname((string) $appName);
+            newrelic_set_appname((string)$appName);
         }
     }
 
-    /**
-     * @return bool
-     */
-    public static function isEnabled()
+    public static function isEnabled(): bool
     {
         return extension_loaded('newrelic');
     }
